@@ -2,7 +2,10 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
+// import { useContext } from "react";
+// import { textoContext } from "./provider";
+import { useContext } from "react";
+import { languageContext } from "./ProviderLanguage";
 
 
 function NewYork() {
@@ -106,17 +109,36 @@ function NewYork() {
     console.log("estado despues del fetch:  ", data)
 
 
-    if (!data) {
-        return <p>Cargando noticias...</p>;
+    // if (!data) {
+    //     return <p>Cargando noticias...</p>;
+    // }
+
+
+    const noticiasFiltradas = data ? data.filter((noticia) => noticia.section === section) : [];
+
+    // const {texto, changeTexto} = useContext(textoContext);
+
+    // if(texto === null){
+    //     return <p>cargando</p>;
+    // }
+
+    // console.log('este es el texot',texto)
+
+
+    const {language, changeLanguage} = useContext(languageContext);
+
+    if(language === null){
+        return <p>esperando language</p>
     }
-
-
-    const noticiasFiltradas = data ? data.filter((noticia) => noticia.section === section) : data;
-
-
 
     return (
         <>
+
+
+        {/* <button onClick={changeTexto}>{texto}</button> */}
+
+        <button onClick={changeLanguage}>{language}</button>
+
             <div style={titulo}>
                 <button style={{ ...lupa, all: 'unset' }}>🔎</button>
                 <h1 style={tituloStyle}>The New York Time</h1>
@@ -129,7 +151,7 @@ function NewYork() {
                 <Link to={"/Section/Finance"} style={{ all: 'unset' }}>Finance</Link>
                 <Link to={"/Section/World News"} style={{ all: 'unset' }}>WorldNews</Link>
                 <Link to={"/Section/Technology"} style={{ all: 'unset' }}>Technology</Link>
-                <Link to={"/Section/Entertainment"} style={{ all: 'unset' }}>Entertainment</Link>
+                <Link to={"/Section/Entertainment"} style={{...CardStyle, all: 'unset' }}>Entertainment</Link>
             </div>
 
 
@@ -138,9 +160,9 @@ function NewYork() {
 
             <div className="gridNoticias" style={GridStyle}>
                 {noticiasFiltradas.length === 0 ? (
-                    data.map((noticia) => (
+                    (data || []).map((noticia) => (
                         <div key={noticia.id} style={CardStyle}>
-                            <Link to={`/Articulo/${noticia.id}`} style={TituloCard}>{noticia.headline}</Link>
+                            <Link to={`/Articulo/${noticia.id}`} style={TituloCard}>{noticia.translations[language].abstract}</Link>
                             <p>{noticia.body.slice(1, 360)}...</p>
                         </div>
                     ))
